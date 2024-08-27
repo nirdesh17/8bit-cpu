@@ -1,7 +1,7 @@
 module alu (
     input [7:0] operand1,
     input [7:0] operand2,
-    input [3:0] operation,
+    input [2:0] operation,
     output [7:0] result,
     output carry_out
 );
@@ -24,7 +24,7 @@ module alu (
             3'b101: ALU_Result=operand1|operand2;
             3'b110: ALU_Result=operand1^operand2;
 
-            default: ALU_Result=8'bxxxx_xxxx;
+            default: ALU_Result = 8'b00000000;
         endcase
     end  
 endmodule
