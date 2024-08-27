@@ -1,55 +1,83 @@
 module register_tb;
+
+    // Testbench signals
     reg clk;
     reg write_enable;
-    reg [2:0] read_reg1, read_reg2, write_reg; // 3-bit address for register
-    reg [7:0] write_data; // 8-bit data input
-    wire [7:0] read_data1, read_data2; // 8-bit data output
+    reg [2:0] read_reg1, read_reg2;
+    reg [7:0] write_data;
+    wire [7:0] read_data1, read_data2;
 
-    // instantiate the register module
-    register register_inst (
+    // Instantiate the Register File
+    initial begin
+        // $readmemh("memory.hex", ram_inst.memory, 0, 255);/
+        $dumpfile("register.vcd");
+        $dumpvars();
+    end
+    register uut (
         .clk(clk),
         .write_enable(write_enable),
         .read_reg1(read_reg1),
         .read_reg2(read_reg2),
-        .write_reg(write_reg),
         .write_data(write_data),
         .read_data1(read_data1),
         .read_data2(read_data2)
     );
 
-    // generate a clock signal
-    always #5 clk = ~clk; // Generate a clock signal with a period of 10 time units
+    // Clock generation
+    always begin
+        #5 clk = ~clk; // 10ns clock period (100MHz)
+    end
 
-    // initialize the inputs
+    // Testbench initialization and test cases
     initial begin
+        // Initialize signals
         clk = 0;
         write_enable = 0;
-        read_reg1 = 0;
-        read_reg2 = 0;
-        write_reg = 0;
-        write_data = 0;
+        read_reg1 = 3'b000;
+        read_reg2 = 3'b001;
+        write_data = 8'b00000000;
 
-        // Test case 1
-        #10 write_enable = 1; write_reg = 3'b000; write_data = 8'b0000_1101;
-        #10 write_enable = 0; read_reg1 = 3'b000; 
+        // Wait for global reset
+        #10;
 
-        // Test case 2
-        #10 write_enable = 1; write_reg = 3'b001; write_data = 8'b0000_0011;
-        #10 write_enable = 0; read_reg2 = 3'b001;
+        // Write data to register 1
+        write_data = 8'b10101010; // Example data
+        write_enable = 1;
+        read_reg1 = 3'b001; // Register to write
+        #10;
 
-        // Test case 3
-        #10 write_enable = 1; write_reg = 3'b010; write_data = 8'b0000_1101;
-        #10 write_enable = 0; read_reg1 = 3'b010; read_reg2 = 3'b010;
+        // Disable write
+        write_enable = 0;
 
-        // Test Case 4: Ensure read data is independent of write data when write_enable is low
-        #10 write_enable = 0; write_data = 8'b0000_0000; read_reg1 = 3'b001; read_reg2 = 3'b010;
+        // Check read from register 1
+        read_reg1 = 3'b001; // Register to read
+        read_reg2 = 3'b000; // Read another register to check data
+        #10;
 
-        #10 $stop; // Stop the simulation
+        // Display results
+        $display("Read Data from Register 1: %b", read_data1);
+        $display("Read Data from Register 2: %b", read_data2);
+
+        // Change the write address and write new data
+        write_data = 8'b11110000; // New data
+        write_enable = 1;
+        read_reg1 = 3'b010; // New register to write
+        #10;
+
+        // Disable write
+        write_enable = 0;
+
+        // Check read from new register
+        read_reg1 = 3'b010; // Register to read
+        read_reg2 = 3'b001; // Check data of the previous register
+        #10;
+
+        // Display results
+        $display("Read Data from Register 1 (After Update): %b", read_data1);
+        $display("Read Data from Register 2 (After Update): %b", read_data2);
+
+        // Finish simulation
+        #20 $finish;
     end
 
-    // monitor the inputs and outputs
-    initial begin
-        $monitor("clk=%b write_enable=%b read_reg1=%b read_reg2=%b write_reg=%b write_data=%b read_data1=%b read_data2=%b", 
-                  clk, write_enable, read_reg1, read_reg2, write_reg, write_data, read_data1, read_data2);
-    end
 endmodule

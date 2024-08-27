@@ -1,9 +1,15 @@
 module alu_tb;
     reg [7:0] operand1;
     reg [7:0] operand2;
-    reg [3:0] operation;
+    reg [2:0] operation;
+    reg enable;
     wire [7:0] result;
-    wire carry_out;
+
+    initial begin
+        // $readmemh("memory.hex", ram_inst.memory, 0, 255);/
+        $dumpfile("alu.vcd");
+        $dumpvars();
+    end
 
     // instantiate the alu module
     alu alu_inst (
@@ -11,13 +17,14 @@ module alu_tb;
         .operand2(operand2),
         .operation(operation),
         .result(result),
-        .carry_out(carry_out)
+        .enable(enable)
     );
     
     // initialize the inputs
     initial begin
-        operand1 = 8'b0000_1101;
-        operand2 = 8'b0000_0011;
+        enable = 1;
+        operand1 = 8'b00001101;
+        operand2 = 8'b00000011;
         operation = 3'b000;
         #10 operation = 3'b001;
         #10 operation = 3'b010;
@@ -30,7 +37,7 @@ module alu_tb;
     end
 
     initial begin
-        $monitor("operand1=%b operand2=%b operation=%b result=%b carry_out=%b", operand1, operand2, operation, result, carry_out);
+        $monitor("operand1=%b operand2=%b operation=%b result=%b", operand1, operand2, operation, result);
     end   
     
 endmodule

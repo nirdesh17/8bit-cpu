@@ -1,92 +1,100 @@
-module cpu_tb;
+// module cpu_tb;
+//     reg clk;
+//     reg reset;
+//     reg [15:0] instr;
+//     wire [7:0] result;
+
+//     // Instantiate the CPU
+//     cpu cpu_inst (
+//         .clk(clk),
+//         .reset(reset),
+//         .instr(instr),
+//         .result(result)
+//     );
+
+//      initial begin
+//         // $readmemh("memory.hex", ram_inst.memory, 0, 255);/
+//         $dumpfile("cpu.vcd");
+//         $dumpvars();
+//     end
+//     initial begin
+//         clk = 0;
+//         reset = 1;
+//         // instr = 12'b000_010_010_000; // Example instruction: ADD R1, R2, R3
+//         instr = 16'b000_1_001_000_00001010; // ADD R1, R1 + 10
+//         #10 reset = 0;
+        
+//         // #10 reset = 0;
+//         // #10 instr = 16'b0010000100110100; // Example instruction: SUB R1, R2, R4
+//         // #10 instr = 16'b0100000100110101; // Example instruction: AND R1, R2, R5
+//         // #10 instr = 16'b0110000100110110; // Example instruction: OR R1, R2, R6
+//         // #10 instr = 16'b1000000100110111; // Example instruction: XOR R1, R2, R7
+//         // #10 instr = 16'b1010000100111000; // Example instruction: MUL R1, R2, R8
+//         // #10 instr = 16'b1100000100111001; // Example instruction: DIV R1, R2, R9
+//         #10 $finish;
+//     end
+
+//     always #5 clk = ~clk; // Generate clock signal
+//     initial begin
+//         $monitor("At time %t, Instruction: %b, Result: %d", $time, instr, result);
+//     end
+
+// endmodule
+
+
+
+module tb_cpu;
 
     // Testbench signals
     reg clk;
     reg reset;
-    reg [7:0] instruction_memory [255:0]; // Memory to hold instructions
-    reg [2:0] reg_write_addr;  // Register to write
-    reg [7:0] reg_write_data;  // Data to write into the register
-    reg reg_write_enable;      // Enable write signal for registers
-
+    reg [12:0] instr;
     wire [7:0] result;
-    wire carry_out;
-    wire [7:0] read_data1;     // Monitor read data 1
-    wire [7:0] read_data2;     // Monitor read data 2
+
+    initial begin
+        // $readmemh("memory.hex", ram_inst.memory, 0, 255);/
+        $dumpfile("cpu.vcd");
+        $dumpvars();
+    end
 
     // Instantiate the CPU
     cpu uut (
         .clk(clk),
         .reset(reset),
-        .result(result),
-        .carry_out(carry_out)
-    );
-
-    // Instantiate Register File
-    register reg_file (
-        .clk(clk),
-        .write_enable(reg_write_enable),
-        .read_reg1(uut.reg_file.read_reg1), // Assuming these are accessible
-        .read_reg2(uut.reg_file.read_reg2), // Assuming these are accessible
-        .write_reg(reg_write_addr),
-        .write_data(reg_write_data),
-        .read_data1(read_data1),
-        .read_data2(read_data2)
+        .instr(instr),
+        .result(result)
     );
 
     // Clock generation
-    always begin
-        #5 clk = ~clk; // 10ns clock period (100MHz)
-    end
+    always #5 clk = ~clk;
 
-    // Testbench initialization and test cases
+    // Test procedure
     initial begin
         // Initialize signals
         clk = 0;
+        reset = 0;
+        instr = 13'b0;
+
+        // Apply reset
         reset = 1;
-        reg_write_enable = 0;
-        reg_write_addr = 3'b000;
-        reg_write_data = 8'b00000000;
-
-        #10 reset = 0; // Release reset after 10ns
-
-        // Initialize memory with instructions
-        instruction_memory[0] = 8'b0001_0010; // Example instruction: ADD R1, R2
-        instruction_memory[1] = 8'b0001_0101; // Example instruction: SUB R3, R4
-
-        // Initialize registers
-        reg_write_enable = 1;
-        reg_write_addr = 3'b001; // Register R1
-        reg_write_data = 8'b00001101; // 13
+        #10;
+        reset = 0;
         #10;
 
-        reg_write_addr = 3'b010; // Register R2
-        reg_write_data = 8'b00000011; // 3
+        // Test Immediate Load Instruction
+        instr = 13'b1_011_000000001; // Immediate mode, load value 1 into register 3
         #10;
-
-        reg_write_addr = 3'b011; // Register R3
-        reg_write_data = 8'b00001010; // 10
+        instr = 13'b1_010_000000011; 
+        #10
+        instr = 13'b0_011_010_001_000; // Register mode, perform operation defined by opcode between R1 and R2, store result in R3
         #10;
+        // Observe result (expected result depends on the ALU operation defined by the opcode)
 
-        reg_write_addr = 3'b100; // Register R4
-        reg_write_data = 8'b00000100; // 4
-        #10;
+        // Print output
+        $display("Result: %b", result);
 
-        reg_write_enable = 0; // Disable further register writes
-
-        // Apply test cases
-        #20; // Wait for some cycles
-        $display("Test Case 1: Addition");
-        $monitor("Time = %0t, Result = %b, Carry Out = %b", $time, result, carry_out);
-
-        #20; // Wait for more cycles
-        $display("Test Case 2: Subtraction");
-        $monitor("Time = %0t, Result = %b, Carry Out = %b", $time, result, carry_out);
-
-        // Display register contents
-        $monitor("Register Read 1: %b, Register Read 2: %b", read_data1, read_data2);
-
-        // Finish simulation
-        #100 $finish;
+        // End simulation
+        $stop;
     end
 
 endmodule

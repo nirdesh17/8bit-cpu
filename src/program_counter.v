@@ -1,22 +1,21 @@
 module program_counter (
     input wire clk,              // Clock signal
     input wire reset,            // Reset signal
-    input wire [7:0] new_addr,   // New address to load (e.g., for branch instructions)
-    input wire load,             // Load new address signal
-    input wire increment,        // Increment address signal
+    input enable,
     output reg [7:0] pc          // Current program counter value
 );
 
+    initial begin
+        pc = 8'b00000000; // Initial value of the program counter
+    end
+   
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            pc <= 8'b0000_0000; // Reset the PC to 0
+            pc <= pc+1; // Reset the PC to 0
         end
-        else if (load) begin
-            pc <= new_addr;     // Load new address into PC
-        end
-        else if (increment) begin
-            pc <= pc + 1;       // Increment the PC
-        end
+    end
+    always @(posedge reset) begin
+        pc<=0;
     end
 
 endmodule
