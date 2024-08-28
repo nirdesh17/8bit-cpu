@@ -1,5 +1,5 @@
 $date
-	Tue Aug 27 18:07:44 2024
+	Wed Aug 28 11:58:58 2024
 $end
 $version
 	Icarus Verilog
@@ -15,83 +15,84 @@ $var wire 1 $ write_enable $end
 $var reg 8 % data_out [7:0] $end
 $var integer 32 & i [31:0] $end
 $upscope $end
-$scope module program_counter $end
-$var wire 1 ' clk $end
-$var wire 1 ( enable $end
-$var wire 1 ) reset $end
-$var reg 8 * pc [7:0] $end
-$upscope $end
 $scope module tb_cpu $end
-$var wire 8 + result [7:0] $end
-$var reg 1 , clk $end
-$var reg 13 - instr [12:0] $end
-$var reg 1 . reset $end
+$var wire 8 ' result [7:0] $end
+$var reg 1 ( clk $end
+$var reg 13 ) instr [12:0] $end
+$var reg 1 * reset $end
 $scope module uut $end
-$var wire 1 , clk $end
-$var wire 13 / instr [12:0] $end
-$var wire 1 . reset $end
-$var wire 8 0 result [7:0] $end
-$var wire 8 1 reg_data2 [7:0] $end
-$var wire 8 2 reg_data1 [7:0] $end
-$var wire 8 3 alu_result [7:0] $end
-$var reg 3 4 alu_op [2:0] $end
-$var reg 3 5 dest_reg [2:0] $end
-$var reg 1 6 immediate_mode $end
-$var reg 8 7 operand1 [7:0] $end
-$var reg 8 8 operand2 [7:0] $end
-$var reg 8 9 reg_write_data [7:0] $end
-$var reg 1 : write_enable $end
+$var wire 1 ( clk $end
+$var wire 13 + instr [12:0] $end
+$var wire 8 , operand1 [7:0] $end
+$var wire 8 - operand2 [7:0] $end
+$var wire 1 * reset $end
+$var wire 8 . reg_data2 [7:0] $end
+$var wire 8 / reg_data1 [7:0] $end
+$var wire 8 0 pc [7:0] $end
+$var wire 8 1 alu_result [7:0] $end
+$var reg 3 2 alu_op [2:0] $end
+$var reg 2 3 cycle [1:0] $end
+$var reg 3 4 dest_reg [2:0] $end
+$var reg 1 5 pc_enable $end
+$var reg 8 6 reg_write_data [7:0] $end
+$var reg 8 7 result [7:0] $end
+$var reg 1 8 write_enable $end
 $scope module alu_inst $end
-$var wire 1 ; enable $end
-$var wire 8 < operand1 [7:0] $end
-$var wire 8 = operand2 [7:0] $end
-$var wire 3 > operation [2:0] $end
-$var reg 8 ? result [7:0] $end
+$var wire 1 9 enable $end
+$var wire 8 : operand1 [7:0] $end
+$var wire 8 ; operand2 [7:0] $end
+$var wire 3 < operation [2:0] $end
+$var reg 8 = result [7:0] $end
+$upscope $end
+$scope module pc_inst $end
+$var wire 1 ( clk $end
+$var wire 1 5 enable $end
+$var wire 1 * reset $end
+$var reg 8 > pc [7:0] $end
 $upscope $end
 $scope module reg_file $end
-$var wire 1 , clk $end
-$var wire 3 @ read_reg1 [2:0] $end
-$var wire 3 A read_reg2 [2:0] $end
-$var wire 8 B write_data [7:0] $end
-$var wire 1 : write_enable $end
-$var reg 8 C read_data1 [7:0] $end
-$var reg 8 D read_data2 [7:0] $end
+$var wire 1 ( clk $end
+$var wire 3 ? read_reg1 [2:0] $end
+$var wire 3 @ read_reg2 [2:0] $end
+$var wire 8 A write_data [7:0] $end
+$var wire 1 8 write_enable $end
+$var reg 8 B read_data1 [7:0] $end
+$var reg 8 C read_data2 [7:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 #0
 $dumpvars
-b1 D
 b1 C
-b0 B
-b0 A
+b1 B
+bx A
 b0 @
-b10 ?
+b0 ?
 b0 >
-b1 =
-b1 <
-1;
-1:
-b0 9
-b1 8
-b1 7
-06
-b0 5
-b0 4
-b10 3
-b1 2
-b1 1
-b10 0
-b0 /
-1.
-b0 -
-0,
-b10 +
-b0 *
-z)
-z(
-z'
+b0 =
+bx <
+b1 ;
+b1 :
+19
+x8
+bx 7
+bx 6
+15
+bx 4
+b0 3
+bx 2
+b0 1
+b0 0
+b1 /
+b1 .
+b1 -
+b1 ,
+b0 +
+1*
+b0 )
+0(
+bx '
 b100000000 &
 b0 %
 z$
@@ -100,61 +101,78 @@ z"
 bz !
 $end
 #5
-b0 +
-b0 0
-b0 3
-b0 ?
-b0 8
-b0 =
-b0 7
-b0 <
-b0 1
-b0 D
-b0 2
-b0 C
-1,
+1(
 #10
-0,
-0.
+0(
 #15
-1,
-#20
+b1 0
+b1 >
 b1 3
-b1 ?
-b100 +
-b100 0
-b100 2
-b100 C
-b11 5
-b1 8
-b1 =
-16
-b11 @
-0,
-b1011000000001 -
-b1011000000001 /
-#25
-b0 +
-b0 0
-b0 2
-b0 C
-1,
-#30
-b11 3
+18
+b100 6
+b100 A
+b11 4
+b100 ,
+b100 :
+b100 /
+b100 B
 b11 ?
-b11 1
-b11 D
-b11 +
-b11 0
-b10 A
-b1 5
-b11 8
-b11 =
-06
-0,
-b11010001000 -
-b11010001000 /
+1(
+b1011000000100 )
+b1011000000100 +
+0*
+#20
+0(
+#25
+b10 3
+b11 6
+b11 A
+b10 4
+b10 0
+b10 >
+b100 ,
+b100 :
+b100 /
+b100 B
+b10 ?
+1(
+b1010000000011 )
+b1010000000011 +
+#30
+0(
 #35
-b11 9
+b1100 1
+b1100 =
+b11 ,
+b11 :
+b11 /
 b11 B
-1,
+b11 0
+b11 >
+b11 3
+b10 2
+b10 <
+b1 4
+b100 -
+b100 ;
+b100 .
+b100 C
+b11 ?
+b10 @
+1(
+b11010001010 )
+b11010001010 +
+#40
+0(
+#45
+b0 3
+b1100 '
+b1100 7
+b1100 6
+b1100 A
+b100 0
+b100 >
+1(
+#50
+0(
+#55
