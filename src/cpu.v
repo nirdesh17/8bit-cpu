@@ -1,38 +1,35 @@
 module cpu (
     input wire clk,              // Clock signal
     input wire reset,            // Reset signal
-    input wire [12:0] instr,     // Input instruction (13 bits)
+    input wire [15:0] instr,     // Input instruction (16 bits)
     output reg [7:0] result      // Final output result
 );
-    wire [7:0] operand1, operand2;   // Operands for ALU
-    wire [7:0] alu_result;          // ALU result
-    reg [2:0] alu_op;               // ALU operation code
-    reg [2:0] dest_reg;             // Destination register address
-    reg [7:0] reg_write_data;       // Data to write to register
-    reg [1:0] cycle;                // Cycle counter
-    wire [7:0] reg_data1, reg_data2; // Data from registers
-    reg write_enable;               // Register write enable
+    wire [7:0] operand1;         // Operand1 for ALU
+    reg [7:0] operand2;          // Operand2 for ALU
+    wire [7:0] alu_result;       // ALU result (from alu module)
+    reg [2:0] alu_op;            // ALU operation code
+    reg [3:0] dest_reg;          // Destination register address
+    reg [7:0] reg_write_data;    // Data to write to register
+    reg [7:0] addr;              // Memory address
+    reg write_enable;            // Register write enable
+    wire [7:0] data_out;        // Data output from memory
 
-    // Program Counter
-    wire [7:0] pc;                  // Program counter output
-    reg pc_enable;                  // Program counter enable
-
-    program_counter pc_inst (
+    
+    memory mem_inst (
         .clk(clk),
-        .reset(reset),
-        .enable(pc_enable),
-        .pc(pc)
+        .write_enable(write_enable),
+        .addr(addr),
+        .data_in(reg_write_data),
+        .data_out(data_out)
     );
 
-    // Instantiate the register file
+    // Register file instantiation
     register reg_file (
         .clk(clk),
         .write_enable(write_enable),
-        .read_reg1(instr[11:9]),    // Read register 1 (based on instruction)
-        .read_reg2(instr[8:6]),     // Read register 2 (based on instruction)
+        .read_reg1(dest_reg),    // Read register 1 (based on instruction)
         .write_data(reg_write_data),
-        .read_data1(reg_data1),
-        .read_data2(reg_data2)
+        .read_data1(operand1)
     );
 
     // ALU instantiation
@@ -40,46 +37,55 @@ module cpu (
         .operand1(operand1),
         .operand2(operand2),
         .operation(alu_op),
-        .enable(1'b1),              // Always enabled
+        .enable(1'b1),            // Always enabled
         .result(alu_result)
     );
 
-    assign operand1 = reg_data1;  
+    // Always block for combinational logic
+    always @(*) begin
+        alu_op = instr[14:12];   // Extract ALU operation from instruction
+        
+    end
 
-    assign operand2 = reg_data2;
-    // Control Logic for 4-Cycle Operation
+    // Sequential logic
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            cycle <= 2'b00;         // Start at cycle 0
-            pc_enable <= 1'b1;      // Enable program counter
+            result <= 8'b0;
+            write_enable <= 0;
         end else begin
-            case (cycle)
-                2'b00: begin
-                    // Cycle 1: Fetch first instruction and store in register
-                    dest_reg <= instr[11:9];   // Destination register for first instruction
-                    reg_write_data <= instr[7:0]; // First instruction value
-                    write_enable <= 1'b1;      // Enable writing to the register
-                    cycle <= 2'b01;            // Move to next cycle
+            case (alu_op)
+                3'b000: begin // Immediate load to Register
+                    write_enable <= 1;
+                    dest_reg <= instr[11:8]; 
+                    reg_write_data <= instr[7:0];
                 end
-                2'b01: begin
-                    // Cycle 2: Fetch second instruction and store in another register
-                    dest_reg <= instr[11:9];    // Destination register for second instruction
-                    reg_write_data <= instr[7:0]; // Second instruction value
-                    write_enable <= 1'b1;      // Enable writing to the register
-                    cycle <= 2'b10;            // Move to next cycle
+
+                3'b001: begin // Register to memory
+                    write_enable <= 1;
+                    addr <= instr[7:0];
+                    dest_reg <= instr[11:8];
+                    reg_write_data <= operand1;
                 end
-                2'b10: begin
-                    dest_reg <= instr[5:3];
-                    alu_op <= instr[2:0];  
-                    cycle <= 2'b11;            // Move to next cycle
+
+                3'b010: begin // Memory read operation
+                    write_enable <= 0;         // Ensure memory is in read mode
+                    addr <= instr[7:0];        // Set the address
+                    result <= data_out;  
+                    dest_reg <= instr[11:8];
+                    reg_write_data <=data_out;    // Store the memory output
                 end
-                2'b11: begin
-                    // Cycle 4: Store ALU result in destination register
-                    dest_reg <= instr[5:3];    // Destination register for ALU result
-                    reg_write_data <= alu_result; // Write the ALU result
-                    write_enable <= 1'b1;      // Enable writing to the register
-                    result <= alu_result;      // Output the result
-                    cycle <= 2'b00;            // Reset cycle for the next instruction
+
+                3'b011: begin // ALU + operation
+                    write_enable <= 1;
+                    dest_reg <= instr[11:8]; 
+                    operand2 <=instr[7:0];
+                    result <= alu_result;
+                    operand2 = instr[7:0];   // Operand2 comes from the immediate value
+                    reg_write_data <=alu_result;
+                end
+
+                default: begin
+                    write_enable <= 0;
                 end
             endcase
         end

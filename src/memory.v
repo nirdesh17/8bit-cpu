@@ -15,10 +15,10 @@ module memory (
         end
 
     initial begin
-        data_out = 0; // Default value
+        data_out = 8'b00000000; // Default value
     end 
 
-    always @(posedge clk) begin
+    always @(*) begin
          // Default value
         if (write_enable) begin
             // Write operation

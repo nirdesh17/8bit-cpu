@@ -3,7 +3,7 @@ module tb_cpu;
     // Testbench signals
     reg clk;
     reg reset;
-    reg [12:0] instr;
+    reg [15:0] instr;
     wire [7:0] result;
 
     initial begin
@@ -27,27 +27,26 @@ module tb_cpu;
         // Initialize signals
         clk = 0;
         reset = 0;
-        instr = 13'b0;
+        instr = 16'b0;
 
         // Apply reset
         reset = 1;
-        #15;
+        #5;
         reset = 0;
-        // Cycle 1: Test Immediate Load Instruction (first operand)
-        instr = 13'b1_011_0_00000100; // Immediate mode, load value 1 into register 3
-        #10;  // Wait for two clock cycles to simulate two phases (fetch and execute)
-
-        // Cycle 2: Test Immediate Load Instruction (second operand)
-        instr = 13'b1_010_0_00000011; // Immediate mode, load value 3 into register 2
-        #10;  // Wait for two clock cycles to simulate two phases (fetch and execute)
-
-        // Cycle 3: Perform ALU Operation (ADD)
-        instr = 13'b0_011_010_001_010; // Register mode, perform ADD between R2 and R3, store result in R1
-        #20;  // Wait for two clock cycles to simulate ALU operation and storing result
-
-        // Print output
+        #5;
+        
+        // Cycle 1: Immediate Load to Register
+        instr = 16'b0000_0000_00000100; // Load value 4 into register 0
+        #20;
+        instr = 16'b0001_0000_00000010; // write to memory at address 2
+        #20;
+        instr = 16'b0010_0001_00000010; // read from memory at address 2
+        #20;
+        instr = 16'b0011_0001_00000111; // add 7 with register 1
+        #20;
         $display("Result: %b", result);
 
+        // $display("Result: %b", result);
 
         // End simulation
         $stop;

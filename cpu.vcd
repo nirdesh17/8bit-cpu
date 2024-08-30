@@ -1,5 +1,5 @@
 $date
-	Wed Aug 28 11:58:58 2024
+	Fri Aug 30 10:59:01 2024
 $end
 $version
 	Icarus Verilog
@@ -7,172 +7,199 @@ $end
 $timescale
 	1s
 $end
-$scope module memory $end
-$var wire 8 ! addr [7:0] $end
-$var wire 1 " clk $end
-$var wire 8 # data_in [7:0] $end
-$var wire 1 $ write_enable $end
-$var reg 8 % data_out [7:0] $end
-$var integer 32 & i [31:0] $end
+$scope module program_counter $end
+$var wire 1 ! clk $end
+$var wire 1 " enable $end
+$var wire 1 # reset $end
+$var reg 8 $ pc [7:0] $end
 $upscope $end
 $scope module tb_cpu $end
-$var wire 8 ' result [7:0] $end
-$var reg 1 ( clk $end
-$var reg 13 ) instr [12:0] $end
-$var reg 1 * reset $end
+$var wire 8 % result [7:0] $end
+$var reg 1 & clk $end
+$var reg 16 ' instr [15:0] $end
+$var reg 1 ( reset $end
 $scope module uut $end
-$var wire 1 ( clk $end
-$var wire 13 + instr [12:0] $end
-$var wire 8 , operand1 [7:0] $end
-$var wire 8 - operand2 [7:0] $end
-$var wire 1 * reset $end
-$var wire 8 . reg_data2 [7:0] $end
-$var wire 8 / reg_data1 [7:0] $end
-$var wire 8 0 pc [7:0] $end
-$var wire 8 1 alu_result [7:0] $end
-$var reg 3 2 alu_op [2:0] $end
-$var reg 2 3 cycle [1:0] $end
-$var reg 3 4 dest_reg [2:0] $end
-$var reg 1 5 pc_enable $end
-$var reg 8 6 reg_write_data [7:0] $end
-$var reg 8 7 result [7:0] $end
-$var reg 1 8 write_enable $end
+$var wire 1 & clk $end
+$var wire 16 ) instr [15:0] $end
+$var wire 1 ( reset $end
+$var wire 8 * operand1 [7:0] $end
+$var wire 8 + data_out [7:0] $end
+$var wire 8 , alu_result [7:0] $end
+$var reg 8 - addr [7:0] $end
+$var reg 3 . alu_op [2:0] $end
+$var reg 4 / dest_reg [3:0] $end
+$var reg 8 0 operand2 [7:0] $end
+$var reg 8 1 reg_write_data [7:0] $end
+$var reg 8 2 result [7:0] $end
+$var reg 1 3 write_enable $end
 $scope module alu_inst $end
-$var wire 1 9 enable $end
-$var wire 8 : operand1 [7:0] $end
-$var wire 8 ; operand2 [7:0] $end
-$var wire 3 < operation [2:0] $end
-$var reg 8 = result [7:0] $end
+$var wire 1 4 enable $end
+$var wire 8 5 operand2 [7:0] $end
+$var wire 3 6 operation [2:0] $end
+$var wire 8 7 operand1 [7:0] $end
+$var reg 8 8 result [7:0] $end
 $upscope $end
-$scope module pc_inst $end
-$var wire 1 ( clk $end
-$var wire 1 5 enable $end
-$var wire 1 * reset $end
-$var reg 8 > pc [7:0] $end
+$scope module mem_inst $end
+$var wire 8 9 addr [7:0] $end
+$var wire 1 & clk $end
+$var wire 8 : data_in [7:0] $end
+$var wire 1 3 write_enable $end
+$var reg 8 ; data_out [7:0] $end
+$var integer 32 < i [31:0] $end
 $upscope $end
 $scope module reg_file $end
-$var wire 1 ( clk $end
-$var wire 3 ? read_reg1 [2:0] $end
-$var wire 3 @ read_reg2 [2:0] $end
-$var wire 8 A write_data [7:0] $end
-$var wire 1 8 write_enable $end
-$var reg 8 B read_data1 [7:0] $end
-$var reg 8 C read_data2 [7:0] $end
+$var wire 1 & clk $end
+$var wire 4 = read_reg1 [3:0] $end
+$var wire 8 > write_data [7:0] $end
+$var wire 1 3 write_enable $end
+$var reg 8 ? read_data1 [7:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 #0
 $dumpvars
-b1 C
-b1 B
-bx A
-b0 @
-b0 ?
-b0 >
-b0 =
-bx <
-b1 ;
-b1 :
-19
-x8
+bx ?
+bx >
+bx =
+b100000000 <
+bx ;
+bx :
+bx 9
+b0 8
 bx 7
-bx 6
-15
-bx 4
-b0 3
-bx 2
-b0 1
-b0 0
-b1 /
-b1 .
-b1 -
-b1 ,
-b0 +
-1*
+b0 6
+bx 5
+14
+03
+b0 2
+bx 1
+bx 0
+bx /
+b0 .
+bx -
+b0 ,
+bx +
+bx *
 b0 )
-0(
-bx '
-b100000000 &
+1(
+b0 '
+0&
 b0 %
-z$
-bz #
+bx $
+z#
 z"
-bz !
+z!
 $end
 #5
-1(
+b0 *
+b0 7
+b0 ?
+b0 1
+b0 :
+b0 >
+b0 /
+b0 =
+13
+0(
+1&
 #10
-0(
+b100 '
+b100 )
+0&
 #15
-b1 0
-b1 >
-b1 3
-18
-b100 6
-b100 A
-b11 4
-b100 ,
+b100 1
 b100 :
-b100 /
-b100 B
-b11 ?
-1(
-b1011000000100 )
-b1011000000100 +
-0*
-#20
-0(
-#25
-b10 3
-b11 6
-b11 A
-b10 4
-b10 0
-b10 >
-b100 ,
-b100 :
-b100 /
-b100 B
-b10 ?
-1(
-b1010000000011 )
-b1010000000011 +
-#30
-0(
-#35
-b1100 1
-b1100 =
-b11 ,
-b11 :
-b11 /
-b11 B
-b11 0
-b11 >
-b11 3
-b10 2
-b10 <
-b1 4
-b100 -
-b100 ;
-b100 .
-b100 C
-b11 ?
-b10 @
-1(
-b11010001010 )
-b11010001010 +
-#40
-0(
-#45
-b0 3
-b1100 '
-b1100 7
-b1100 6
-b1100 A
-b100 0
 b100 >
-1(
+1&
+#20
+0&
+#25
+b100 *
+b100 7
+b100 ?
+1&
+#30
+b1 .
+b1 6
+0&
+b1000000000010 '
+b1000000000010 )
+#35
+b10 -
+b10 9
+1&
+#40
+0&
+#45
+1&
 #50
-0(
+b10 .
+b10 6
+0&
+b10000100000010 '
+b10000100000010 )
 #55
+b100 +
+b100 ;
+b0 *
+b0 7
+b0 ?
+bx 1
+bx :
+bx >
+b1 /
+b1 =
+bx %
+bx 2
+03
+1&
+#60
+0&
+#65
+bx *
+bx 7
+bx ?
+b100 1
+b100 :
+b100 >
+b100 %
+b100 2
+1&
+#70
+bx ,
+bx 8
+b11 .
+b11 6
+0&
+b11000100000111 '
+b11000100000111 )
+#75
+b1011 ,
+b1011 8
+b100 *
+b100 7
+b100 ?
+bx 1
+bx :
+bx >
+bx %
+bx 2
+13
+b111 0
+b111 5
+1&
+#80
+0&
+#85
+bx ,
+bx 8
+bx *
+bx 7
+bx ?
+b1011 1
+b1011 :
+b1011 >
+b1011 %
+b1011 2
+1&
